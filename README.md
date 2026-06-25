@@ -139,7 +139,7 @@ pip x.x.x from C:\Users\<ユーザー名>\AppData\Local\Programs\Python\...
 ### pip関連ツールの更新
 
 ```powershell
-python -m pip install --upgrade pip setuptools wheel
+python -m pip install --upgrade pip==24.3.1 setuptools==75.8.0 wheel==0.45.1
 ```
 
 ### 基本ライブラリ
