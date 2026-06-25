@@ -52,7 +52,7 @@ Excelファイルの問い合わせ内容をまとめて処理することがで
 
 `--no-ner` を指定してもしなくても、**問い合わせ内容が外部のネットワークに送信されることはありません**。
 
-このツールは OpenAI や Claude のようなクラウドAPIを一切使っていません。氏名・住所などの検出に使っている **GiNZA** は、`pip install` 時にPCへダウンロードされたモデルファイルをもとに、**PC内だけで処理が完結するローカルAI**です。
+このツールは OpenAI や Claude のようなクラウドAPIを一切使っていません。氏名・住所などの検出に使っている **GiNZA** と **ja-ginza-electra** は、`pip install` 時にPCへダウンロードされたモデルファイルをもとに、**PC内だけで処理が完結するローカルAI**です。
 
 | オプション | 処理方法 | 通信 |
 |------------|----------|------|
@@ -81,6 +81,8 @@ python --version
 
 `Python 3.11.9` と表示されれば**インストール済みです**。[手順3](#3-ライブラリのインストール)へ進んでください。
 
+> ⚠️ `Python 3.11.9` 以外が表示された場合は動作保証対象外です。
+> 安定性を優先するため、次の手順で Python 3.11.9 をインストールしてください。
 > ⚠️ 「python」と打つと **Microsoft Storeが開く場合** は未インストールです。次の手順へ進んでください。
 
 ---
@@ -117,7 +119,7 @@ winget install --id Python.Python.3.11 --version 3.11.9 -e
 
 ```powershell
 python --version
-pip --version
+python -m pip --version
 ```
 
 以下のように表示されれば成功です。
@@ -143,7 +145,7 @@ python -m pip install --upgrade pip setuptools wheel
 ### 基本ライブラリ
 
 ```powershell
-pip install openpyxl==3.1.5 spacy==3.7.5 ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-electra==5.2.0
+python -m pip install openpyxl==3.1.5 spacy==3.7.5 ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-electra==5.2.0
 ```
 
 | ライブラリ | バージョン | 用途 |
@@ -159,13 +161,13 @@ pip install openpyxl==3.1.5 spacy==3.7.5 ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-e
 
 ### インストール確認
 
-以下のコマンドで、標準モデルのインストール確認します。
+以下のコマンドで、標準モデルがインストールされていることを確認します
 
 ```powershell
 python -c "import spacy; spacy.load('ja_ginza'); print('ja_ginza OK')"
 ```
 
-以下のコマンドで高精度モデルの確認します。
+以下のコマンドで、高精度モデルがインストールされていることを確認します
 
 ```powershell
 python -c "import spacy; spacy.load('ja_ginza_electra'); print('ja_ginza_electra OK')"
@@ -304,7 +306,7 @@ python mask_pii.py --excel 問い合わせ.xlsx --excel-out 結果_20260620.xlsx
 **対処:** PowerShellを閉じて再度開く。それでもダメな場合は再インストール。
 
 ```powershell
-winget install Python.Python.3.12
+winget install --id Python.Python.3.11 --version 3.11.9 -e
 ```
 
 公式インストーラーを使った場合は **「Add Python to PATH」** のチェックを確認してください。
@@ -322,7 +324,7 @@ python -m pip install --upgrade pip
 ### ライブラリのインストールで権限エラーが出る
 
 ```powershell
-pip install --user openpyxl ginza ja-ginza
+python -m pip install --user openpyxl==3.1.5 spacy==3.7.5 ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-electra==5.2.0
 ```
 
 ---
@@ -334,7 +336,7 @@ OSError: [E050] Can't find model 'ja_ginza'
 ```
 
 ```powershell
-pip install ginza ja-ginza
+python -m pip install --upgrade --force-reinstall ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-electra==5.2.0
 ```
 
 ---
@@ -355,7 +357,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 
 ## 動作環境
 
-- Python 3.10 以上
+- Python 3.11.9
 - Windows 11
 
 ---
