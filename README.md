@@ -126,7 +126,7 @@ python -m pip --version
 
 ```
 Python 3.11.9
-pip 24.x.x from C:\Users\<ユーザー名>\AppData\Local\Programs\Python\...
+pip x.x.x from C:\Users\<ユーザー名>\AppData\Local\Programs\Python\...
 ```
 
 ---
