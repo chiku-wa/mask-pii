@@ -83,6 +83,14 @@ RULE_PATTERNS = [
      "[住所]"),
 ]
 
+DEPT_NAME_PATTERN = re.compile(
+    r"([A-Za-zＡ-Ｚａ-ｚ0-9０-９一-龥ァ-ヶー]{1,30}"
+    r"(?:部門|事業部|本部|部署|課|室|係|チーム|グループ|センター)|"
+    r"[A-Za-zＡ-Ｚａ-ｚ0-9０-９一-龥ァ-ヶー]{1,29}"
+    r"(?<![一二三四五六七八九十数全各両大半])部)"
+    r"(?=の|に|へ|で|から|所属|です|となります|[,、。．.）)\]】」』]|$)"
+)
+
 def apply_rules(text: str):
     records = []
     for category, pattern, label in RULE_PATTERNS:
@@ -92,6 +100,21 @@ def apply_rules(text: str):
                 start=m.start(), end=m.end(), layer="rule",
             ))
             text = text[:m.start()] + label + text[m.end():]
+    return text, records
+
+
+# ---------------------------------------------------------------------------
+# 部門名パターン照合
+# ---------------------------------------------------------------------------
+def apply_dept_patterns(text: str):
+    records = []
+    for m in sorted(DEPT_NAME_PATTERN.finditer(text), key=lambda x: x.start(1), reverse=True):
+        original = m.group(1)
+        records.append(MaskRecord(
+            category="部門名", original=original, replacement="[部門名]",
+            start=m.start(1), end=m.end(1), layer="rule",
+        ))
+        text = text[:m.start(1)] + "[部門名]" + text[m.end(1):]
     return text, records
 
 
@@ -149,6 +172,7 @@ def mask(text: str, dept_list: list, nlp) -> MaskResult:
     all_records = []
     text = normalize(text)
     text, r = apply_rules(text);         all_records.extend(r)
+    text, r = apply_dept_patterns(text); all_records.extend(r)
     if dept_list:
         text, r = apply_dept_dict(text, dept_list); all_records.extend(r)
     if nlp:
