@@ -145,23 +145,23 @@ python -m pip install --upgrade pip setuptools wheel
 ### 基本ライブラリ
 
 ```powershell
-python -m pip install openpyxl==3.1.5 spacy==3.7.5 ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-electra==5.2.0
+python -m pip install openpyxl==3.1.5 click==8.1.8 spacy==3.7.5 ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-electra==5.2.0
 ```
 
 | ライブラリ | バージョン | 用途 |
 |-----------|------------|------|
 | `openpyxl` | `3.1.5` | Excelファイルの読み書き |
 | `spacy` | `3.7.5` | GiNZA が利用する自然言語処理ライブラリ |
+| `click` | `8.1.8` | spaCy のコマンド処理で使われる依存ライブラリ |
 | `ginza` | `5.2.0` | 日本語NLPフレームワーク |
 | `ja-ginza` | `5.2.0` | GiNZA 日本語モデル（標準） |
 | `ja-ginza-electra` | `5.2.0` | GiNZA 日本語モデル（高精度） |
 
-> ⏳ `ja-ginza` は日本語解析モデルのため、ダウンロードに数分かかります。
-
+> ⏳ `ja-ginza` と `ja-ginza-electra` は日本語解析モデルのため、ダウンロードに数分かかります。
 
 ### インストール確認
 
-以下のコマンドで、標準モデルがインストールされていることを確認します
+以下のコマンドで、標準モデルがインストールされていることを確認します。
 
 ```powershell
 python -c "import spacy; spacy.load('ja_ginza'); print('ja_ginza OK')"
@@ -317,14 +317,6 @@ winget install --id Python.Python.3.11 --version 3.11.9 -e
 
 ```powershell
 python -m pip install --upgrade pip
-```
-
----
-
-### ライブラリのインストールで権限エラーが出る
-
-```powershell
-python -m pip install --user openpyxl==3.1.5 spacy==3.7.5 ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-electra==5.2.0
 ```
 
 ---
