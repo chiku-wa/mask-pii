@@ -8,9 +8,7 @@ mask_pii.py  --  日本語個人情報マスキングスクリプト
   Layer 3: GiNZA NER（spaCy日本語モデル）
 
 セットアップ:
-  pip install ginza ja-ginza spacy openpyxl
-  # 高精度モデルを使う場合（推奨）:
-  pip install ja-ginza-electra
+  python -m pip install openpyxl==3.1.5 click==8.1.8 spacy==3.7.5 ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-electra==5.2.0
 
 使い方:
   # テキスト直接指定
@@ -32,6 +30,13 @@ import csv
 import argparse
 import unicodedata
 from dataclasses import dataclass, field, asdict
+
+PREFECTURE_PATTERN = (
+    r"北海道|東京都|(?:大阪|京都)府|(?:神奈川|埼玉|千葉|愛知|福岡|静岡|茨城|栃木|群馬|"
+    r"新潟|富山|石川|福井|山梨|長野|岐阜|三重|滋賀|兵庫|奈良|和歌山|鳥取|島根|岡山|広島|"
+    r"山口|徳島|香川|愛媛|高知|佐賀|長崎|熊本|大分|宮崎|鹿児島|沖縄|"
+    r"青森|岩手|宮城|秋田|山形|福島)県"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -71,10 +76,10 @@ RULE_PATTERNS = [
     ("生年月日",   r"\d{4}[-/]\d{1,2}[-/]\d{1,2}", "[生年月日]"),
     ("カード番号", r"\b\d{4}[\s\-]\d{4}[\s\-]\d{4}[\s\-]\d{4}\b", "[カード番号]"),
     ("住所",
-     r"(北海道|東京都|(?:大阪|京都)府|(?:神奈川|埼玉|千葉|愛知|福岡|静岡|茨城|栃木|群馬|"
-     r"新潟|富山|石川|福井|山梨|長野|岐阜|三重|滋賀|兵庫|奈良|和歌山|鳥取|島根|岡山|広島|"
-     r"山口|徳島|香川|愛媛|高知|佐賀|長崎|熊本|大分|宮崎|鹿児島|沖縄|"
-     r"青森|岩手|宮城|秋田|山形|福島)県)[^\s　、。]{2,60}?[0-9０-９\-－番地号室]+",
+     rf"({PREFECTURE_PATTERN})[^\s　、。]{{2,60}}?[0-9０-９\-－番地号室]+",
+     "[住所]"),
+    ("住所",
+     rf"({PREFECTURE_PATTERN})[^\s　、。]{{1,20}}?[市区町村]",
      "[住所]"),
 ]
 
@@ -112,6 +117,11 @@ NER_LABEL_MAP = {
     "Person":       ("氏名",   "[氏名]"),
     "GPE":          ("住所",   "[住所]"),
     "Location":     ("住所",   "[住所]"),
+    "Province":     ("住所",   "[住所]"),
+    "City":         ("住所",   "[住所]"),
+    "County":       ("住所",   "[住所]"),
+    "Ward":         ("住所",   "[住所]"),
+    "Station":      ("住所",   "[住所]"),
     "Facility":     ("施設名", "[施設名]"),
     "Organization": ("組織名", "[組織名]"),
 }
@@ -236,7 +246,7 @@ def load_nlp(quiet: bool = False):
             except OSError:
                 continue
         print("[警告] GiNZA/spaCy 日本語モデルが見つかりません。ルールベースのみで処理します。")
-        print("       pip install ginza ja-ginza  を実行してください。")
+        print("       python -m pip install ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-electra==5.2.0  を実行してください。")
     except ImportError:
         print("[警告] spaCy がインストールされていません。ルールベースのみで処理します。")
     return None
