@@ -103,7 +103,7 @@ winget install --id Python.Python.3.11 --version 3.11.9 -e
 
 #### 方法B: 公式インストーラー（GUIで操作したい場合）
 
-1. ブラウザで `https://www.python.org/downloads/release/python-3119/` を開く
+1. ブラウザで [Python 3.11.9 のダウンロードページ](https://www.python.org/downloads/release/python-3119/) を開く
 2. 「Files」セクションから、`Windows installer (64-bit)`をクリックしてダウンロード
     ![alt text](docs/images/README/image.png)
 
@@ -356,6 +356,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 
 ## 参考リンク
 
-- Python公式: `https://www.python.org/`
-- GiNZA（日本語NLP）: `https://megagonlabs.github.io/ginza/`
-- openpyxl: `https://openpyxl.readthedocs.io/`
+- [Python公式](https://www.python.org/)
+- [Python 3.11.9](https://www.python.org/downloads/release/python-3119/)
+- [GiNZA（日本語NLP）](https://megagonlabs.github.io/ginza/)
+- [openpyxl](https://openpyxl.readthedocs.io/)
