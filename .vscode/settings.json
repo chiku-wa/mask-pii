@@ -1,0 +1,5 @@
+{
+  "markdown.copyFiles.destination": {
+    "/README.md": "docs/images/${documentBaseName}/"
+  }
+}

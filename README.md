@@ -79,7 +79,7 @@ Python とは、このツールを動かすために必要なプログラムで�
 python --version
 ```
 
-`Python 3.x.x` と表示されれば**インストール済みです**。[手順3](#3-ライブラリのインストール)へ進んでください。
+`Python 3.11.9` と表示されれば**インストール済みです**。[手順3](#3-ライブラリのインストール)へ進んでください。
 
 > ⚠️ 「python」と打つと **Microsoft Storeが開く場合** は未インストールです。次の手順へ進んでください。
 
@@ -92,7 +92,7 @@ python --version
 PowerShell で以下を1行実行するだけです。
 
 ```powershell
-winget install Python.Python.3.12
+winget install --id Python.Python.3.11 --version 3.11.9 -e
 ```
 
 完了後、**PowerShellを一度閉じて再度開いてください**（設定を反映するため）。
@@ -101,8 +101,10 @@ winget install Python.Python.3.12
 
 #### 方法B: 公式インストーラー（GUIで操作したい場合）
 
-1. ブラウザで `https://www.python.org/downloads/` を開く
-2. 「Download Python 3.x.x」をクリックしてダウンロード
+1. ブラウザで `https://www.python.org/downloads/release/python-3119/` を開く
+2. 「Files」セクションから、`Windows installer (64-bit)`をクリックしてダウンロード
+    ![alt text](docs/images/README/image.png)
+
 3. ダウンロードした `.exe` ファイルを実行
 4. **最初の画面で「Add Python to PATH」に必ずチェック** ✅
    ⚠️ ここを忘れると `python` コマンドが動きません
@@ -121,7 +123,7 @@ pip --version
 以下のように表示されれば成功です。
 
 ```
-Python 3.12.x
+Python 3.11.9
 pip 24.x.x from C:\Users\<ユーザー名>\AppData\Local\Programs\Python\...
 ```
 
@@ -132,39 +134,44 @@ pip 24.x.x from C:\Users\<ユーザー名>\AppData\Local\Programs\Python\...
 ライブラリとは、ツールが使う追加機能のことです。
 以下のコマンドを PowerShell で**一度だけ**実行してください。
 
+### pip関連ツールの更新
+
+```powershell
+python -m pip install --upgrade pip setuptools wheel
+```
+
 ### 基本ライブラリ
 
 ```powershell
-pip install openpyxl ginza ja-ginza
+pip install openpyxl==3.1.5 spacy==3.7.5 ginza==5.2.0 ja-ginza==5.2.0 ja-ginza-electra==5.2.0
 ```
 
-| ライブラリ | 用途 |
-|-----------|------|
-| `openpyxl` | Excelファイルの読み書き |
-| `ginza` | 日本語NLPフレームワーク |
-| `ja-ginza` | GiNZA 日本語モデル（標準） |
+| ライブラリ | バージョン | 用途 |
+|-----------|------------|------|
+| `openpyxl` | `3.1.5` | Excelファイルの読み書き |
+| `spacy` | `3.7.5` | GiNZA が利用する自然言語処理ライブラリ |
+| `ginza` | `5.2.0` | 日本語NLPフレームワーク |
+| `ja-ginza` | `5.2.0` | GiNZA 日本語モデル（標準） |
+| `ja-ginza-electra` | `5.2.0` | GiNZA 日本語モデル（高精度） |
 
 > ⏳ `ja-ginza` は日本語解析モデルのため、ダウンロードに数分かかります。
 
----
-
-### 高精度モデルのインストール（推奨）
-
-氏名・住所の検出精度が上がります（約400MB、時間がかかります）。
-
-```powershell
-pip install ja-ginza-electra
-```
-
----
 
 ### インストール確認
 
+以下のコマンドで、標準モデルのインストール確認します。
+
 ```powershell
-python -c "import spacy; spacy.load('ja_ginza'); print('OK')"
+python -c "import spacy; spacy.load('ja_ginza'); print('ja_ginza OK')"
 ```
 
-`OK` と表示されれば準備完了です。
+以下のコマンドで高精度モデルの確認します。
+
+```powershell
+python -c "import spacy; spacy.load('ja_ginza_electra'); print('ja_ginza_electra OK')"
+```
+
+双方とも`OK` と表示されれば準備完了です。
 
 ---
 
