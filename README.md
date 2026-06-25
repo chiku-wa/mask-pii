@@ -316,7 +316,7 @@ winget install --id Python.Python.3.11 --version 3.11.9 -e
 ### `pip` が認識されない
 
 ```powershell
-python -m pip install --upgrade pip
+python -m pip install --upgrade pip==24.3.1 setuptools==75.8.0 wheel==0.45.1
 ```
 
 ---
