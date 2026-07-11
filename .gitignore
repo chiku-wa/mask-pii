@@ -1,4 +1,29 @@
+# macOS
 .DS_Store
-masked_問い合わせサンプル.xlsx
-masked_*
+
+# Codex / AI coding tools (local workspace data)
+.codex/
+.agents/
 openai_api_debug.log
+*.codex.tmp
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Editor and temporary files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Generated Excel output
+masked_*
