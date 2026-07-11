@@ -38,6 +38,20 @@ PREFECTURE_PATTERN = (
     r"青森|岩手|宮城|秋田|山形|福島)県"
 )
 
+DEPT_EXCLUDE_TERMS = {
+    # 方向・範囲・関係を表す一般語。部門名CSVに入っていてもマスクしない。
+    "外部", "内部", "上部", "下部", "中部", "前部", "後部",
+    "一部", "全部", "各部", "両部", "大部", "半部",
+    "他部", "当部", "同部", "該部", "本部", "支部",
+    "社内", "社外", "全社", "自社", "他社", "弊社", "御社",
+    "国内", "海外", "全体", "一式",
+    # 組織・役割の一般名詞。単独では部門名として扱わない。
+    "部", "部門", "部署", "課", "室", "係", "班",
+    "チーム", "グループ", "センター", "組織", "会社", "企業", "法人",
+    "担当", "担当者", "関係者", "責任者", "管理者",
+    "社員", "職員", "役員", "利用者", "ユーザー", "顧客", "お客様",
+}
+
 
 # ---------------------------------------------------------------------------
 # データクラス
@@ -87,9 +101,19 @@ DEPT_NAME_PATTERN = re.compile(
     r"([A-Za-zＡ-Ｚａ-ｚ0-9０-９一-龥ァ-ヶー]{1,30}"
     r"(?:部門|事業部|本部|部署|課|室|係|チーム|グループ|センター)|"
     r"[A-Za-zＡ-Ｚａ-ｚ0-9０-９一-龥ァ-ヶー]{1,29}"
-    r"(?<![一二三四五六七八九十数全各両大半])部)"
-    r"(?=の|に|へ|で|から|所属|です|となります|[,、。．.）)\]】」』]|$)"
+    r"(?<![一二三四五六七八九十数全各両大半外内上下中前後他当同該本支])部)"
+    r"(?=の|に|へ|で|から|と|や|および|及び|ならびに|並びに|所属|です|となります|[,、。．.）)\]】」』]|$)"
 )
+
+DEPT_GENERIC_PART_PATTERN = re.compile(
+    r"^[一二三四五六七八九十数全各両大半外内上下中前後他当同該本支].{0,2}部$"
+)
+
+DEPT_NER_LABELS = {
+    "Department",
+    "Division",
+    "Section",
+}
 
 def apply_rules(text: str):
     records = []
@@ -106,10 +130,18 @@ def apply_rules(text: str):
 # ---------------------------------------------------------------------------
 # 部門名パターン照合
 # ---------------------------------------------------------------------------
+def is_valid_dept_name(dept: str) -> bool:
+    dept = normalize(dept.strip())
+    if not dept or dept in DEPT_EXCLUDE_TERMS:
+        return False
+    return not DEPT_GENERIC_PART_PATTERN.fullmatch(dept)
+
 def apply_dept_patterns(text: str):
     records = []
     for m in sorted(DEPT_NAME_PATTERN.finditer(text), key=lambda x: x.start(1), reverse=True):
         original = m.group(1)
+        if not is_valid_dept_name(original):
+            continue
         records.append(MaskRecord(
             category="部門名", original=original, replacement="[部門名]",
             start=m.start(1), end=m.end(1), layer="rule",
@@ -123,7 +155,8 @@ def apply_dept_patterns(text: str):
 # ---------------------------------------------------------------------------
 def apply_dept_dict(text: str, dept_list: list):
     records = []
-    for dept in sorted(dept_list, key=len, reverse=True):
+    valid_depts = [dept for dept in dept_list if is_valid_dept_name(dept)]
+    for dept in sorted(valid_depts, key=len, reverse=True):
         if dept in text:
             records.append(MaskRecord(
                 category="部門名", original=dept, replacement="[部門名]",
@@ -153,7 +186,10 @@ def apply_ner(text: str, nlp):
     doc = nlp(text)
     records = []
     for ent in sorted(doc.ents, key=lambda e: e.start_char, reverse=True):
-        label_info = NER_LABEL_MAP.get(ent.label_)
+        if ent.label_ in DEPT_NER_LABELS and is_valid_dept_name(ent.text):
+            label_info = ("部門名", "[部門名]")
+        else:
+            label_info = NER_LABEL_MAP.get(ent.label_)
         if not label_info:
             continue
         category, replacement = label_info
@@ -253,8 +289,8 @@ def load_dept_csv(path: str) -> list:
     with open(path, encoding="utf-8-sig") as f:
         for row in csv.reader(f):
             if row:
-                val = row[0].strip()
-                if val:
+                val = normalize(row[0].strip())
+                if is_valid_dept_name(val):
                     depts.append(val)
     return depts
 
